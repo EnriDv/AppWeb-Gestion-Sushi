@@ -1,0 +1,138 @@
+[
+  {
+    "id": 1,
+    "imageUrl": "https://placehold.co/600x400/FF6347/FFFFFF?text=Italian+Margherita",
+    "altText": "Pizza Margherita",
+    "title": "Italian Pizza Margherita",
+    "description": "Classic Neapolitan pizza made with San Marzano tomatoes, mozzarella cheese, fresh basil, salt, and extra-virgin olive oil.",
+    "price": "$14.99"
+  },
+  {
+    "id": 2,
+    "imageUrl": "https://placehold.co/600x400/4682B4/FFFFFF?text=USA+Cheeseburger",
+    "altText": "Classic American Cheeseburger",
+    "title": "USA Classic Cheeseburger",
+    "description": "A juicy beef patty with melted cheddar cheese, lettuce, tomato, onions, and pickles, served in a toasted bun.",
+    "price": "$12.50"
+  },
+  {
+    "id": 3,
+    "imageUrl": "https://placehold.co/600x400/FFC107/333333?text=Spanish+Paella",
+    "altText": "Spanish Seafood Paella",
+    "title": "Spanish Seafood Paella",
+    "description": "A traditional Spanish rice dish made with saffron-infused rice, seafood like shrimp and mussels, chicken, and vegetables.",
+    "price": "$22.00"
+  },
+  {
+    "id": 4,
+    "imageUrl": "https://placehold.co/600x400/8B4513/FFFFFF?text=French+Coq+au+Vin",
+    "altText": "French Coq au Vin",
+    "title": "French Coq au Vin",
+    "description": "A classic French dish of chicken braised with wine (traditionally Burgundy), lardons, mushrooms, and optionally garlic.",
+    "price": "$24.75"
+  },
+  {
+    "id": 5,
+    "imageUrl": "https://placehold.co/600x400/008000/FFFFFF?text=Mexican+Tacos",
+    "altText": "Mexican Street Tacos",
+    "title": "Mexican Street Tacos al Pastor",
+    "description": "Flavorful spit-grilled pork, marinated in a blend of dried chilies, spices, and pineapple, served on small corn tortillas.",
+    "price": "$10.99"
+  },
+  {
+    "id": 6,
+    "imageUrl": "https://placehold.co/600x400/D2691E/FFFFFF?text=UK+Fish+&+Chips",
+    "altText": "British Fish and Chips",
+    "title": "British Fish and Chips",
+    "description": "Crispy battered cod or haddock, served with a generous portion of thick-cut fried potatoes (chips).",
+    "price": "$16.50"
+  },
+  {
+    "id": 7,
+    "imageUrl": "https://placehold.co/600x400/A52A2A/FFFFFF?text=Hungarian+Goulash",
+    "altText": "Hungarian Goulash",
+    "title": "Hungarian Goulash",
+    "description": "A hearty stew of meat (typically beef) and vegetables, seasoned with paprika and other spices. Often served with noodles or bread.",
+    "price": "$18.00"
+  },
+  {
+    "id": 8,
+    "imageUrl": "https://placehold.co/600x400/F0E68C/333333?text=Austrian+Schnitzel",
+    "altText": "Austrian Wiener Schnitzel",
+    "title": "Austrian Wiener Schnitzel",
+    "description": "A large, thin, breaded and pan-fried veal cutlet. Traditionally served with a slice of lemon and potato salad.",
+    "price": "$21.90"
+  },
+  {
+    "id": 9,
+    "imageUrl": "https://placehold.co/600x400/32CD32/FFFFFF?text=Peruvian+Ceviche",
+    "altText": "Peruvian Ceviche",
+    "title": "Peruvian Ceviche",
+    "description": "Fresh raw fish cured in citrus juices, such as lemon or lime, and spiced with ají, chili peppers, onions, and cilantro.",
+    "price": "$17.75"
+  },
+  {
+    "id": 10,
+    "imageUrl": "https://placehold.co/600x400/800000/FFFFFF?text=Brazilian+Feijoada",
+    "altText": "Brazilian Feijoada",
+    "title": "Brazilian Feijoada Completa",
+    "description": "A rich black bean stew with various cuts of pork and beef, typically served with rice, collard greens, farofa, and orange slices.",
+    "price": "$20.50"
+  },
+  {
+    "id": 11,
+    "imageUrl": "https://placehold.co/600x400/6A5ACD/FFFFFF?text=Greek+Moussaka",
+    "altText": "Greek Moussaka",
+    "title": "Greek Moussaka",
+    "description": "An eggplant and/or potato-based dish, often including ground meat, layered with a creamy Béchamel sauce and baked.",
+    "price": "$19.25"
+  },
+  {
+    "id": 12,
+    "imageUrl": "https://placehold.co/600x400/DEB887/333333?text=Canadian+Poutine",
+    "altText": "Canadian Poutine",
+    "title": "Canadian Poutine",
+    "description": "A classic Canadian comfort food made with french fries and cheese curds topped with a brown gravy.",
+    "price": "$11.99"
+  },
+  {
+    "id": 13,
+    "imageUrl": "https://placehold.co/600x400/CD5C5C/FFFFFF?text=Argentine+Asado",
+    "altText": "Argentine Asado (BBQ)",
+    "title": "Argentine Asado (Mixed Grill)",
+    "description": "A traditional South American barbecue featuring a variety of grilled meats, including beef, pork, chicken, and sausages like chorizo.",
+    "price": "$28.00"
+  },
+  {
+    "id": 14,
+    "imageUrl": "https://placehold.co/600x400/00CED1/333333?text=Japanese+Sushi+Set",
+    "altText": "Japanese Sushi Platter",
+    "title": "Japanese Sushi Assortment",
+    "description": "A selection of vinegared rice (sushi) combined with various ingredients such as seafood (tuna, salmon), vegetables, and nori.",
+    "price": "$25.00"
+  },
+  {
+    "id": 15,
+    "imageUrl": "https://placehold.co/600x400/FFA500/FFFFFF?text=Thai+Pad+Thai",
+    "altText": "Thai Pad Thai Noodles",
+    "title": "Thai Pad Thai Noodles",
+    "description": "Stir-fried rice noodles with shrimp or chicken, tofu, peanuts, scrambled egg, and bean sprouts, in a tangy tamarind sauce.",
+    "price": "$15.50"
+  },
+  {
+    "id": 16,
+    "imageUrl": "https://placehold.co/600x400/FF8C00/FFFFFF?text=Indian+Biryani",
+    "altText": "Indian Chicken Biryani",
+    "title": "Indian Chicken Biryani",
+    "description": "A fragrant and flavorful mixed rice dish made with long-grain rice, spices, meat (chicken, mutton, or fish), and vegetables.",
+    "price": "$17.99"
+  },
+  {
+    "id": 17,
+    "imageUrl": "https://placehold.co/600x400/BDB76B/333333?text=German+Sauerbraten",
+    "altText": "German Sauerbraten",
+    "title": "German Sauerbraten",
+    "description": "A traditional German pot roast, typically beef (but other meats can be used) marinated for days in a wine or vinegar mixture.",
+    "price": "$23.50"
+  }
+]
