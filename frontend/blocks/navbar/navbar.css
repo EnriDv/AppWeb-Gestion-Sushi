@@ -1,0 +1,57 @@
+.navbar {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  right: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  background: rgba(0,0,0,0.6);
+  border-radius: 12px;
+  backdrop-filter: blur(4px);
+  z-index: 10;
+}
+
+.navbar__left,
+.navbar__right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.navbar__logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5rem;
+  color: #f5e8d0;
+  margin-right: 2rem;
+}
+
+.navbar__link {
+  color: #f5e8d0;
+  font-size: 0.9rem;
+  text-decoration: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.navbar__link:hover {
+  background: rgba(255,255,255,0.15);
+}
+
+.navbar__menu-button,
+.navbar__icon {
+  background: rgba(0,0,0,0.7);
+  border: none;
+  border-radius: 8px;
+  padding: 0.4rem;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: #f5e8d0;
+}
+
+.navbar__menu-button:hover,
+.navbar__icon:hover {
+  background: rgba(255,255,255,0.2);
+}

@@ -1,0 +1,24 @@
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.67);
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+.modal--open {
+  display: flex;
+}
+.modal__menu {
+  list-style: none;
+  text-align: center;
+  padding: 0;
+}
+.modal__menu li {
+  margin: 1rem 0;
+}
+.modal__menu a {
+  color: white;
+  text-decoration: none;
+  font-size: 1.5rem;
+}
