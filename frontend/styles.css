@@ -1,0 +1,31 @@
+@import url(blocks/social/social.css);
+@import url(blocks/main-card/main-card.css);
+@import url(blocks/navbar/navbar.css);
+@import url(blocks/frontpage/frontpage.css);
+@import url(blocks/menu/menu.css);
+@import url(blocks/about/about.css);
+@import url(blocks/contact/contact.css);
+@import url(blocks/blog/blog.css);
+@import url(blocks/blog-post/blog-post.css);
+@import url(blocks/reservation/reservation.css);
+@import url(blocks/cart/cart.css);
+@import url(blocks/registration/registration.css);
+@import url(blocks/login/login.css);
+@import url(blocks/menu-overlay/menu-overlay.css);
+
+html{
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Example font, replace with your preferred */
+    background-color: #000; /* Main background color */
+    color: #f0f0f0; /* Default text color */
+    height: 98%;
+    padding: 0.5%;
+}
+
+main{
+    height: 100%;
+}

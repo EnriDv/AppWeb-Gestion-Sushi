@@ -1,23 +1,49 @@
-export class AppNavbar extends HTMLElement {
-  constructor() {
-    super();
-    this.root = this.attachShadow({ mode: "open" });
-    const styles = document.createElement("style");
-    this.root.appendChild(styles);
-    (async () => {
-      const res = await fetch("/frontend/blocks/navbar/navbar.css");
-      styles.textContent = await res.text();
-    })();
-  }
+import { Router } from '../../services/router.js';
+import { MenuOverlay } from '../menu-overlay/menu-overlay.js';
 
-  connectedCallback() {
-    const tpl = document.getElementById("app-navbar-template");
-    this.root.appendChild(tpl.content.cloneNode(true));
+export class Navbar extends HTMLElement {
+    constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
 
-    this.root
-      .querySelector(".navbar__menu-button")
-      .addEventListener("click", () => window.dispatchEvent(new Event("toggle-menu")));
-  }
+        const template = document.createElement('template');
+        template.innerHTML = `
+            <link rel="stylesheet" href="./styles.css"> <div class="first-navbar-body">
+                <button class="first-navbar-button-burger">≡</button>
+                <a class="first-navbar-logo nav-link" href="/">Qitchen</a>
+                <a class="first-navbar-link nav-link desktop-only" href="/menu">Menu</a>
+                <a class="first-navbar-link nav-link desktop-only" href="/about">About</a>
+                <a class="first-navbar-link nav-link desktop-only" href="/reservation">Book A Table</a>
+            </div>
+            <div class="second-navbar-body" style="margin-left:40%">
+                <a href="/registration" class="first-navbar-link nav-link">Registrarse</a>
+                <a href="/cart" class="secon-navbar-button nav-link">🛒</a>
+            </div>
+            `;
+        this.shadowRoot.appendChild(template.content.cloneNode(true));
+    }
+
+    connectedCallback() {
+        const navButton = this.shadowRoot.querySelector('.first-navbar-button-burger');
+        let menuOverlay = document.querySelector('menu-overlay-component');
+        if (!menuOverlay) {
+            menuOverlay = document.createElement('menu-overlay-component');
+            document.body.appendChild(menuOverlay);
+        }
+
+        if (navButton) {
+            navButton.addEventListener('click', () => {
+                menuOverlay.openMenu();
+            });
+        }
+        this.shadowRoot.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (event) => {
+                event.preventDefault();
+                const href = event.target.getAttribute('href') || event.target.dataset.href;
+                Router.go(href);
+            });
+        });
+    }
 }
 
-customElements.define("app-navbar", AppNavbar);
+customElements.define('navbar-component', Navbar);

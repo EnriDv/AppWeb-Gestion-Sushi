@@ -1,65 +1,96 @@
-// services/Router.js
-const Router = {
-  init: () => {
-    // 1) Click en cualquier elemento con data-route
-    document.querySelectorAll('[data-route]').forEach(el => {
-      el.addEventListener('click', e => {
-        e.preventDefault();
-        const route = e.currentTarget.dataset.route;
-        // dispatch navigate para que index.js actualice layout y luego Router.go
-        window.dispatchEvent(new CustomEvent('navigate', { detail: { route } }));
-      });
-    });
+// services/Router.js (Versión con las nuevas rutas añadidas)
 
-    // 2) Evento popstate (Back/Forward)
-    window.addEventListener('popstate', e => {
-      const route = e.state?.route || location.pathname;
-      window.dispatchEvent(new CustomEvent('navigate', { detail: { route } }));
-    });
+export const Router = {
+    init() {
+        document.body.addEventListener("click", e => {
+            const link = e.target.closest('a[href^="/"]');
+            if (link && !link.hasAttribute('target')) {
+                e.preventDefault();
+                Router.go(link.getAttribute("href"));
+            }
+        });
 
-    // 3) Cuando alguien dispara “navigate”, ejecutamos go()
-    window.addEventListener('navigate', e => {
-      Router.go(e.detail.route);
-    });
+        window.addEventListener("popstate", e => {
+            Router.go(e.state?.route || '/', false);
+        });
 
-    // 4) Al cargar la página, disparar la primera navegación
-    window.dispatchEvent(new CustomEvent('navigate', { detail: { route: location.pathname } }));
-  },
+        Router.go(location.pathname, false);
+    },
 
-  go: (route, addToHistory = true) => {
-    // Empuja al historial (salvo que venga de popstate)
-    if (addToHistory) {
-      history.pushState({ route }, '', route);
+    go(route, addToHistory = true) {
+        if (addToHistory) {
+            history.pushState({ route }, "", route);
+        }
+
+        let pageElement = null;
+        let pageTagName = null;
+
+        switch (route) {
+            case "/":
+            case "/home":
+                pageTagName = "frontpage-component";
+                break;
+            case "/menu":
+                pageTagName = "menu-component";
+                break;
+            case "/blog":
+                pageTagName = "blog-component";
+                break;
+            case "/about":
+                pageTagName = "about-component";
+                break;
+            
+            case "/registration": 
+                pageTagName = "registration-component";
+                break;
+            case "/cart": 
+                pageTagName = "cart-component";
+                break;
+            case "/reservation":
+                pageTagName = "reservation-component";
+                break;
+            case "/contact":
+                pageTagName = "contact-component";
+                break;
+            case "/blog-post":
+                pageTagName = "blog-post-component";
+                break;
+            default:
+                if (route.startsWith("/blog-post")) {
+                    pageTagName = "blog-post-component";
+                } else {
+                    pageTagName = "h1"; 
+                }
+                break;
+        }
+
+        if (pageTagName) {
+            if (pageTagName.includes('-')) {
+                if (customElements.get(pageTagName)) {
+                    pageElement = document.createElement(pageTagName);
+                } else {
+                    console.error(`Error de Router: El componente <${pageTagName}> no está definido. Revisa index.html o el script del componente.`);
+                    pageElement = document.createElement("h1");
+                    pageElement.textContent = "Error: No se pudo cargar el componente de la página.";
+                }
+            } else {
+                pageElement = document.createElement(pageTagName);
+            }
+        }
+
+        if (pageElement) {
+            if (pageElement.tagName === 'H1' && !pageElement.textContent) {
+                pageElement.textContent = "404 - Página no encontrada";
+            }
+            
+            const main = document.querySelector("main");
+            if (main) {
+                main.innerHTML = "";
+                main.appendChild(pageElement);
+                window.scrollTo(0, 0);
+            } else {
+                console.error("Error crítico: No se encontró el elemento <main> en el DOM.");
+            }
+        }
     }
-
-    // Elige el componente según la ruta
-    let pageElement;
-    switch (route) {
-      case '/':
-        pageElement = document.createElement('front-page');
-        break;
-      case '/menu':
-        pageElement = document.createElement('menu-page');
-        break;
-      case '/about':
-        pageElement = document.createElement('about-page');
-        break;
-      case '/book':
-        pageElement = document.createElement('book-page');
-        break;
-      default:
-        // ruta desconocida → frontpage o podrías crear un 404-page
-        pageElement = document.createElement('front-page');
-    }
-
-    // Monta el componente dentro del <main id="page-content">
-    const outlet = document.getElementById('page-content');
-    outlet.innerHTML = '';
-    outlet.appendChild(pageElement);
-
-    // Scroll al top
-    window.scrollTo(0, 0);
-  },
 };
-
-export default Router;

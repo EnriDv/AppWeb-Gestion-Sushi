@@ -1,11 +1,16 @@
 
 require("dotenv").config(); // Carga las variables de entorno desde .env
+const path = require("path");
 const express = require("express"); // Framework web para Node.js
 const { Sequelize, DataTypes, Op } = require("sequelize"); // ORM Sequelize y tipos de datos
+const cors = require("cors");
 
 const app = express(); // Inicializa la aplicación Express
 const port = process.env.PORT || 3000; // Define el puerto del servidor
+app.use(cors());
 app.use(express.json()); // Habilita el middleware para parsear cuerpos de solicitud JSON
+
+app.use(express.static(path.join(__dirname)));
 
 // --- Configuración de la conexión a la base de datos con Sequelize ---
 // Utiliza la URL de la base de datos de Render (DB_URL)
@@ -427,9 +432,25 @@ app.post("/api/reservations", createRecord(Reservation));
 app.put("/api/reservations/:id", updateRecord(Reservation));
 app.delete("/api/reservations/:id", deleteRecord(Reservation));
 
-// --- Endpoints para Blogs ---
-app.get("/api/blogs", getAll(Blog));
-app.get("/api/blogs/:id", getById(Blog));
+// --- Endpoints para Blogs ---app.get("/api/blogs", async (req, res) => {
+    try {
+        const blogs = await Blog.findAll();
+        res.json(blogs);
+    } catch (err) {
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+app.get("/api/blogs/:id", async (req, res) => {
+    try {
+        const blog = await Blog.findByPk(req.params.id);
+        if (blog) {
+            res.json(blog);
+        } else {
+            res.status(404).json({ error: "Blog not found" });
+        }
+    } catch (err) {
+        res.status(500).json({ error: "Internal server error" });
+    }
 app.post("/api/blogs", createRecord(Blog));
 app.put("/api/blogs/:id", updateRecord(Blog));
 app.delete("/api/blogs/:id", deleteRecord(Blog));
@@ -521,6 +542,10 @@ app.delete("/api/users/:userId/favorite-blogs/:blogId", async (req, res) => {
         console.error("Error removing blog from favorites:", err);
         res.status(500).json({ error: "Internal server error" });
     }
+});
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // --- Inicio del Servidor ---

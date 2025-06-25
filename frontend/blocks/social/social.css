@@ -1,0 +1,15 @@
+.social-list
+{
+    margin-bottom: 50px;
+    margin-left: 200px;
+}
+
+.social-button{
+    background-color: black;
+    border-radius: 100%;
+    width: 30px;
+    height: 30px;
+    border: 1px solid rgb(73, 73, 73);
+    cursor: pointer;
+    color: white;
+}
