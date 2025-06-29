@@ -432,25 +432,9 @@ app.post("/api/reservations", createRecord(Reservation));
 app.put("/api/reservations/:id", updateRecord(Reservation));
 app.delete("/api/reservations/:id", deleteRecord(Reservation));
 
-// --- Endpoints para Blogs ---app.get("/api/blogs", async (req, res) => {
-    try {
-        const blogs = await Blog.findAll();
-        res.json(blogs);
-    } catch (err) {
-        res.status(500).json({ error: "Internal server error" });
-    }
-});
-app.get("/api/blogs/:id", async (req, res) => {
-    try {
-        const blog = await Blog.findByPk(req.params.id);
-        if (blog) {
-            res.json(blog);
-        } else {
-            res.status(404).json({ error: "Blog not found" });
-        }
-    } catch (err) {
-        res.status(500).json({ error: "Internal server error" });
-    }
+// --- Endpoints para Blogs ---
+app.get("/api/blogs", getAll(Blog));
+app.get("/api/blogs/:id", getById(Blog));
 app.post("/api/blogs", createRecord(Blog));
 app.put("/api/blogs/:id", updateRecord(Blog));
 app.delete("/api/blogs/:id", deleteRecord(Blog));
