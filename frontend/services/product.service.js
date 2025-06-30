@@ -15,7 +15,7 @@ class ProductService {
     }
 
     #initialize() {
-        // Inicialización adicional si es necesaria
+        
     }
 
     async #fetchProducts() {
@@ -33,10 +33,9 @@ class ProductService {
             }
             
             const data = await response.json();
-            console.log('Productos cargados:', data); // Para depuración
+            console.log('Productos cargados:', data);
             this.#products = Array.isArray(data) ? data : [];
             
-            // Asegurarse de que cada producto tenga una categoría
             this.#products = this.#products.map(product => ({
                 ...product,
                 category: product.category || 'other',
@@ -54,7 +53,6 @@ class ProductService {
 
     setProducts(products) {
         this.#products = products.map(p => {
-            // Asegurarse de que el precio sea un número válido
             const price = typeof p.price === 'string' 
                 ? parseFloat(p.price.replace(/[^0-9.-]+/g, ''))
                 : Number(p.price);
@@ -102,5 +100,4 @@ class ProductService {
     }
 }
 
-// Exportar una única instancia del servicio
 export default new ProductService();

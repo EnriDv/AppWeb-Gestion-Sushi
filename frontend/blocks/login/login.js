@@ -60,7 +60,6 @@ export class Login extends HTMLElement {
             form.addEventListener('submit', this.handleSubmit.bind(this));
         }
         
-        // Manejar clics en enlaces internos
         const links = this.shadowRoot.querySelectorAll('a');
         links.forEach(link => {
             link.addEventListener('click', (e) => {
@@ -82,13 +81,11 @@ export class Login extends HTMLElement {
         const password = formData.get('password');
         const errorMessageElement = this.shadowRoot.querySelector('.login__error-message');
 
-        // Reset error message
         errorMessageElement.textContent = '';
         errorMessageElement.style.display = 'none';
 
         try {
             await authService.login(email, password);
-            // La redirección se manejará a través del router
             window.dispatchEvent(new CustomEvent('auth-change'));
             window.location.hash = '/';
         } catch (error) {

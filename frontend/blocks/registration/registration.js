@@ -100,8 +100,7 @@ export class Registration extends HTMLElement {
             form.addEventListener('submit', this.handleSubmit.bind(this));
         }
         
-        // Manejar clics en enlaces internos
-        const links = this.shadowRoot.querySelectorAll('a');
+         const links = this.shadowRoot.querySelectorAll('a');
         links.forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -126,11 +125,9 @@ export class Registration extends HTMLElement {
         const address = formData.get('address');
         const errorMessageElement = this.shadowRoot.querySelector('.registration__error-message');
 
-        // Reset error message
         errorMessageElement.textContent = '';
         errorMessageElement.style.display = 'none';
 
-        // Validar que las contraseñas coincidan
         if (password !== confirmPassword) {
             errorMessageElement.textContent = 'Las contraseñas no coinciden';
             errorMessageElement.style.display = 'block';
@@ -148,7 +145,6 @@ export class Registration extends HTMLElement {
             
             console.log('Registration successful:', data);
             
-            // Redirigir a la página de login después de un registro exitoso
             window.location.href = '/login';
         } catch (error) {
             console.error('Registration failed:', error);

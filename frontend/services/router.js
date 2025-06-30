@@ -1,10 +1,109 @@
+export const Router = {
+    init() {
+        document.body.addEventListener("click", e => {
+            const link = e.target.closest('a[href^="/"]');
+            if (link && !link.hasAttribute('target')) {
+                e.preventDefault();
+                Router.go(link.getAttribute("href"));
+            }
+        });
+        window.addEventListener("popstate", e => {
+            Router.go(e.state?.route || '/', false);
+        });
+        Router.go(location.pathname, false);
+    },
+    go(route, addToHistory = true) {
+        if (addToHistory) {
+            history.pushState({ route }, "", route);
+        }
+        let pageElement = null;
+        let pageTagName = null;
+        switch (route) {
+            case "/":
+            case "/home":
+                pageTagName = "frontpage-component";
+                break;
+            case "/menu":
+                pageTagName = "menu-component";
+                break;
+            case "/blog":
+                pageTagName = "blog-component";
+                break;
+            case "/about":
+                pageTagName = "about-component";
+                break;
+            case "/orders":
+                pageTagName = "orders-component";
+                break
+            case "/login":
+                pageTagName = "login-component";
+                break
+            case "/register": 
+                pageTagName = "registration-component";
+                break;
+            case "/cart": 
+                pageTagName = "cart-component";
+                break;
+            case "/reservation":
+                pageTagName = "reservation-component";
+                break;
+            case "/contact":
+                pageTagName = "contact-component";
+                break;
+            case "/blog-post":
+                pageTagName = "blog-post-component";
+                break;
+            default:
+                if (route.startsWith("/blog-post")) {
+                    pageTagName = "blog-post-component";
+                } else {
+                    pageTagName = "h1"; 
+                }
+                break;
+        }
+            if (pageTagName) {
+            if (pageTagName.includes('-')) {
+                if (customElements.get(pageTagName)) {
+                    pageElement = document.createElement(pageTagName);
+                } else {
+                    console.error(`Error de Router: El componente <${pageTagName}> no está definido. Revisa index.html o el script del componente.`);
+                    pageElement = document.createElement("h1");
+                    pageElement.textContent = "Error: No se pudo cargar el componente de la página.";
+                }
+            } else {
+                pageElement = document.createElement(pageTagName);
+            }
+        }
+            if (pageElement) {
+            if (pageElement.tagName === 'H1' && !pageElement.textContent) {
+                pageElement.textContent = "404 - Página no encontrada";
+            }
+            
+            const main = document.querySelector("main");
+            if (main) {
+                main.innerHTML = "";
+                main.appendChild(pageElement);
+                window.scrollTo(0, 0);
+            } else {
+                console.error("Error crítico: No se encontró el elemento <main> en el DOM.");
+            }
+        }
+    }
+};
+
+/*
+
 import { authService } from './auth.service.js';
 
 class RouterService {
     constructor() {
         this.currentPage = null;
-        this.layout = null;
-        this.init();
+    }
+    
+    static init() {
+        const router = RouterService.getInstance();
+        router._init();
+        return router;
     }
 
     static getInstance() {
@@ -14,23 +113,8 @@ class RouterService {
         return RouterService.instance;
     }
     
-    init() {
-        // Create layout if it doesn't exist
-        if (!this.layout) {
-            this.layout = document.createElement('app-layout');
-            document.body.prepend(this.layout);
-            
-            // Move main content inside layout
-            const main = document.querySelector('main');
-            if (main) {
-                this.layout.shadowRoot.querySelector('.layout__content').appendChild(main);
-            } else {
-                const newMain = document.createElement('main');
-                this.layout.shadowRoot.querySelector('.layout__content').appendChild(newMain);
-            }
-        }
+    _init() {
 
-        // Handle navigation
         document.body.addEventListener("click", e => {
             const link = e.target.closest('a[href^="/"]');
             if (link && !link.hasAttribute('target')) {
@@ -39,12 +123,10 @@ class RouterService {
             }
         });
 
-        // Handle browser back/forward
         window.addEventListener("popstate", e => {
             this.go(e.state?.route || '/', false);
         });
 
-        // Initial route
         this.go(location.pathname, false);
     }
 
@@ -55,20 +137,12 @@ class RouterService {
             return;
         }
 
-        // Clean up current page
         if (this.currentPage && this.currentPage.disconnectedCallback) {
             this.currentPage.disconnectedCallback();
         }
 
-        // Update URL if needed
         if (addToHistory) {
             history.pushState({ route }, "", route);
-        }
-
-        // Update layout title based on route
-        if (this.layout) {
-            const title = this.getPageTitle(route);
-            this.layout.setAttribute('data-title', title);
         }
 
         let pageElement = null;
@@ -94,28 +168,22 @@ class RouterService {
         }
 
         if (pageElement) {
-            const main = this.layout?.shadowRoot?.querySelector('.layout__content');
+            const main = document.getElementById('main');
             if (main) {
-                // Clear existing content
                 main.innerHTML = '';
                 main.appendChild(pageElement);
                 
-                // Scroll to top
                 window.scrollTo(0, 0);
 
-                // Dispatch route change event
                 window.dispatchEvent(new CustomEvent('route-change', { 
                     detail: { route, component: pageTagName } 
                 }));
 
-                // Add specific listeners based on page
                 if (pageTagName === 'login-form') {
                     this.addLoginListeners();
                 } else if (pageTagName === 'register-form') {
                     this.addRegisterListeners();
                 }
-            } else {
-                console.error("Critical Error: Could not find layout content area");
             }
         }
     }
@@ -136,7 +204,6 @@ class RouterService {
             '/blog-post': 'blog-post-component'
         };
 
-        // Handle dynamic routes like /blog-post/123
         if (route.startsWith('/blog-post/')) {
             return 'blog-post-component';
         }
@@ -238,5 +305,7 @@ class RouterService {
     }
 }
 
-// Export the RouterService class
 export { RouterService as Router };
+
+
+*/

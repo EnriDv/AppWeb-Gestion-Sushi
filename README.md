@@ -28,9 +28,55 @@ AppWeb-Gestion-Sushi/
 └── README.md
 ```
 
-## 2. Justificación y Ubicación de los Patrones de Diseño
+## 2. Patrones de Diseño Implementados
 
-### a) Web Components (Frontend)
+### a) Singleton (Router y Servicios)
+
+- **Patrón:** Singleton
+- **Justificación:** Asegura que solo exista una instancia de clases críticas como el Router y servicios como AuthService, proporcionando un punto de acceso global a estas instancias.
+- **Implementación:**
+  ```javascript
+  class RouterService {
+    static getInstance() {
+      if (!RouterService.instance) {
+        RouterService.instance = new RouterService();
+      }
+      return RouterService.instance;
+    }
+  }
+  ```
+- **Ubicación:** `frontend/services/router.js`, `frontend/services/auth.service.js`
+
+### b) Observer (Eventos Personalizados)
+
+- **Patrón:** Observer
+- **Justificación:** Permite la comunicación desacoplada entre componentes a través de eventos personalizados.
+- **Implementación:**
+  ```javascript
+  // Publicar evento
+  window.dispatchEvent(new CustomEvent('auth-change'));
+  
+  // Suscribirse a evento
+  window.addEventListener('auth-change', this.handleAuthChange);
+  ```
+- **Ubicación:** Múltiples componentes que necesitan reaccionar a cambios de autenticación o ruta.
+
+### c) Factory (Componentes UI)
+
+- **Patrón:** Factory
+- **Justificación:** Simplifica la creación de componentes UI consistentes a través de funciones factoría.
+- **Implementación:**
+  ```javascript
+  function createButton(text, onClick) {
+    const button = document.createElement('button');
+    button.textContent = text;
+    button.addEventListener('click', onClick);
+    return button;
+  }
+  ```
+- **Ubicación:** Componentes reutilizables en `frontend/blocks/`
+
+### d) Web Components (Frontend)
 
 - **Patrón:** Web Component (Custom Elements)
 - **Justificación:** Permite encapsular y reutilizar componentes UI como la reserva, carrito, navbar, etc., facilitando el mantenimiento y escalabilidad.
@@ -51,7 +97,7 @@ AppWeb-Gestion-Sushi/
   customElements.define('reservation-component', Reservation)
   ```
 
-### b) ORM y DRY (Backend)
+### e) ORM y DRY (Backend)
 
 - **Patrón:** DRY (Don't Repeat Yourself) + ORM (Object-Relational Mapping)
 - **Justificación:** Se usan funciones genéricas para CRUD sobre modelos Sequelize, evitando duplicación de lógica y facilitando el mantenimiento.
@@ -68,12 +114,6 @@ AppWeb-Gestion-Sushi/
       return async (req, res) => model.create(req.body)
   ```
   Estas funciones se usan en los endpoints para todos los modelos (usuarios, platos, reservas, blogs, órdenes).
-
-### c) Modularidad (Ambos)
-
-- **Patrón:** Modularidad
-- **Justificación:** Separación clara entre frontend y backend, y división del frontend en bloques/componentes reutilizables.
-- **Archivos:** Carpeta `blocks/` en frontend, modelos y rutas en backend.
 
 ## 3. Diagrama de la Base de Datos
 

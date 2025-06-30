@@ -5,6 +5,10 @@
     width: 100%;
 }
 
+.product__sentinel{
+
+}
+
 /* Elementos del menú */
 .menu__image-section {
     flex: 0 0 40%;
@@ -110,7 +114,6 @@
 }
 
 .products__grid {
-    display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 25px;
 }
@@ -194,7 +197,6 @@
     background: #d4b38c;
 }
 
-/* Estados */
 .loading, 
 .error {
     text-align: center;
@@ -208,7 +210,6 @@
     color: #e74c3c;
 }
 
-/* Notificaciones */
 .notification {
     position: fixed;
     bottom: 20px;
@@ -236,7 +237,6 @@
     to { transform: translateX(100%); opacity: 0; }
 }
 
-/* Responsive */
 @media (max-width: 992px) {
     .menu {
         flex-direction: column;
