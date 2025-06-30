@@ -93,19 +93,17 @@ export class Blog extends HTMLElement {
 
     loadBlogPosts(posts, append = false) {
         const articlesList = this.shadowRoot.querySelector('.articles-list');
+        
+        if (!articlesList) return;
+        
         if (!append) {
             articlesList.innerHTML = '';
             this.page = 1;
             this.hasMore = true;
         }
 
-        posts.forEach(post => {
-            const articleDiv = document.createElement('div');
-            articleDiv.classList.add('blog-article');
-            
-            const summary = post.content.substring(0, 150) + (post.content.length > 150 ? '...' : '');
-
-            articleDiv.innerHTML = `
+        const articleDiv.innerHTML = this.articles.map( post=> `
+            <div class='blog-article'>
                 <a href="/blog-post?id=${post.id}" class="article-link">
                     <img src="${post.image_url || 'img/blog-post-main.png'}" alt="Imagen del post">
                     <div class="article-content">
@@ -114,14 +112,9 @@ export class Blog extends HTMLElement {
                         <span class="article-meta">By ${post.author} on ${new Date(post.publication_date).toLocaleDateString()}</span>
                     </div>
                 </a>
-            `;
-            if (append) {
-                articlesList.insertAdjacentHTML('beforeEnd', articleDiv);
-            } else {
-                articlesList.innerHTML = articleDiv;
-                this.setup();
-            }
-        });
+            </div>
+            `).join('');
+            
 
         const style = document.createElement('style');
         style.textContent = `
@@ -132,6 +125,13 @@ export class Blog extends HTMLElement {
             }
         `;
         this.shadowRoot.appendChild(style);
+
+        if (append) {
+                articlesList.insertAdjacentHTML('beforeEnd', articleDiv);
+            } else {
+                articlesList.innerHTML = articleDiv;
+                this.setup();
+            }
     }
 }
 customElements.define('blog-component', Blog);
