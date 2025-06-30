@@ -5,7 +5,7 @@ export class About extends HTMLElement {
 
         const template = document.createElement('template');
         template.innerHTML = `
-            <link rel="stylesheet" href="./styles.css">
+            <link rel="stylesheet" href="/blocks/about/about.css">
             <div class="about-container">
                 <div class="left-section">
                     <img src="img/about-main.png" alt="Chef espolvoreando sal">

@@ -6,7 +6,7 @@ export class Contact extends HTMLElement {
 
         const template = document.createElement('template');
         template.innerHTML = `
-            <link rel="stylesheet" href="./styles.css"> <div class="contact-container">
+            <link rel="stylesheet" href="/blocks/contact/contact.css"> <div class="contact-container">
                 <div class="left-section">
                     <img src="img/contact-main.png" alt="Plato de comida del restaurante">
                     <div class="overlay-content">

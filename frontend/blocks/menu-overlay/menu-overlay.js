@@ -7,7 +7,7 @@ export class MenuOverlay extends HTMLElement {
 
         const template = document.createElement('template');
         template.innerHTML = `
-            <link rel="stylesheet" href="styles.css">
+            <link rel="stylesheet" href="/blocks/menu-overlay/menu-overlay.css">
             <div class="menu-overlay-container">
                 <button class="close-menu-button">X</button>
                 <div class="menu-overlay-content">

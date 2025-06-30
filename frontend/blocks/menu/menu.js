@@ -1,175 +1,227 @@
 
 
+import productService from '../../services/product.service.js';
+import cartService from '../../services/cart.service.js';
+
 export class menu extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
-
-        const template = document.createElement('template');
-        template.innerHTML = `
-            <link rel="stylesheet" href="./styles.css"> <div class="menu-container">
-                <div class="menu-image-section" style="background-image: url(img/menu.png);">
-                    <div class="image-overlay">
-                        <h3 id="menu-title">MENU</h3>
-                        <p id="dish-description" class="menu-description-text"></p>
-                    </div>
-                </div>
-                <div class="menu-list-section">
-                    <ul class="menu-filter-list"></ul>
-                    <div id="dish-list-container"></div>
-                </div>
-            </div>
-        `;
-
-        this.shadowRoot.appendChild(template.content.cloneNode(true));
-
-        this.menuFilterList = this.shadowRoot.querySelector('.menu-filter-list');
-        this.dishListContainer = this.shadowRoot.querySelector('#dish-list-container');
-        this.menuImageSection = this.shadowRoot.querySelector('.menu-image-section');
-        this.menuTitleElement = this.shadowRoot.querySelector('#menu-title');
-        this.dishDescriptionElement = this.shadowRoot.querySelector('#dish-description');
-
-        this.dishDescriptionElement.textContent = '';
-        this.dishDescriptionElement.style.opacity = '0';
+        this.products = [];
+        this.categories = [];
+        this.selectedCategory = 'all';
+        this.isLoading = false;
+        this.error = null;
+        
+        this.renderShell();
     }
 
     connectedCallback() {
-        console.log('Menu component added to the DOM');
-        this.fetchMenuData(); // Llama a fetchMenuData cuando el componente se conecta
+        this.loadProducts();
+        this.addEventListeners();
     }
 
-    async fetchMenuData() {
+    disconnectedCallback() {
+        this.removeEventListeners();
+    }
+
+    async loadProducts() {
+        this.isLoading = true;
+        this.error = null;
+        this.render();
+        
         try {
-            // CORRECCIÓN: Usar el endpoint correcto /api/dishes
-            const response = await fetch('http://localhost:4090/api/dishes');
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const dishes = await response.json();
-
-            this.allDishes = dishes; // Guardamos todos los platos
-            this.renderCategories(dishes);
-            this.renderDishes('All'); // Mostramos todos los platos inicialmente
+            this.products = await productService.getProducts();
+            this.extractCategories();
         } catch (error) {
-            console.error('Error al cargar los datos del menú:', error);
-            this.dishListContainer.innerHTML = '<p>Error al cargar los datos del menú.</p>';
+            console.error('Error al cargar los productos:', error);
+            this.error = 'No se pudieron cargar los productos. Por favor, intente nuevamente.';
+        } finally {
+            this.isLoading = false;
+            this.render();
         }
     }
 
-    renderCategories(dishes) {
-        this.menuFilterList.innerHTML = '';
-        
-        // CORRECCIÓN: Generar categorías dinámicamente desde los platos
-        const categories = ['All', ...new Set(dishes.map(dish => dish.category))];
-        
-        categories.forEach(categoryName => {
-            const listItem = document.createElement('li');
-            listItem.classList.add('menu-filter-card');
-            if (categoryName === 'All') {
-                listItem.classList.add('active'); // La categoría "All" es la activa por defecto
+    extractCategories() {
+        const categorySet = new Set();
+        this.products.forEach(product => {
+            if (product.category) {
+                categorySet.add(product.category);
             }
-            listItem.textContent = categoryName;
-            listItem.dataset.categoryName = categoryName;
-            listItem.addEventListener('click', () => this.filterDishesByCategory(categoryName));
-            this.menuFilterList.appendChild(listItem);
         });
+        this.categories = ['all', ...Array.from(categorySet)];
     }
 
-    renderDishes(categoryName) {
-        this.dishListContainer.innerHTML = '';
-
-        // Resetea la imagen principal al filtrar
-        this.menuTitleElement.textContent = 'MENU';
-        this.dishDescriptionElement.textContent = '';
-        this.dishDescriptionElement.style.opacity = '0';
-        this.menuImageSection.style.backgroundImage = 'url(img/menu.png)';
-
-        // Filtra los platos por la categoría seleccionada
-        const dishesToRender = categoryName === 'All' 
-            ? this.allDishes 
-            : this.allDishes.filter(dish => dish.category === categoryName);
-
-        if (categoryName === 'All') {
-            // Si es "All", agrupa por categoría
-            const categories = [...new Set(this.allDishes.map(d => d.category))];
-            categories.forEach(cat => {
-                const categoryDishes = this.allDishes.filter(d => d.category === cat);
-                if (categoryDishes.length > 0) {
-                    const categoryTitle = document.createElement('h1');
-                    categoryTitle.classList.add('menu-list-category');
-                    categoryTitle.textContent = cat;
-                    this.dishListContainer.appendChild(categoryTitle);
-
-                    const dishList = document.createElement('ul');
-                    dishList.classList.add('menu-list');
-                    categoryDishes.forEach(dish => dishList.appendChild(this.createDishCard(dish)));
-                    this.dishListContainer.appendChild(dishList);
-                }
-            });
-        } else {
-             // Si es una categoría específica, solo muestra la lista de platos
-            if (dishesToRender.length > 0) {
-                const dishList = document.createElement('ul');
-                dishList.classList.add('menu-list');
-                dishesToRender.forEach(dish => dishList.appendChild(this.createDishCard(dish)));
-                this.dishListContainer.appendChild(dishList);
-            } else {
-                this.dishListContainer.innerHTML = `<p>No hay platos en la categoría ${categoryName}.</p>`;
-            }
+    filterProducts() {
+        if (this.selectedCategory === 'all') {
+            return this.products;
         }
+        return this.products.filter(product => 
+            product.category === this.selectedCategory
+        );
     }
 
-    createDishCard(dish) {
-        const listItem = document.createElement('li');
-        listItem.classList.add('menu-card-body');
+    addToCart(productId, event) {
+        event.stopPropagation();
+        cartService.addItem(productId, 1);
+        this.showNotification('Producto añadido al carrito');
+    }
+
+    showNotification(message) {
+        const notification = document.createElement('div');
+        notification.className = 'notification';
+        notification.setAttribute('role', 'alert');
+        notification.setAttribute('aria-live', 'polite');
+        notification.textContent = message;
+        document.body.appendChild(notification);
         
-        // CORRECCIÓN: Usar los nombres de campo del backend (name, price, description, image_url)
-        listItem.innerHTML = `
-            <div class="menu-card-thumbnail" style="background-image: url('${dish.image_url}')"></div>
-            <div class="menu-card-info">
-                <div class="menu-card-info-header">
-                    <h2>${dish.name}</h2>
-                    <h2 class="menu-card-price">$${Number(dish.price).toFixed(2)}</h2>
-                </div>
-                <div class="menu-card-info-body">
-                    ${dish.description}
-                </div>
-                <div class="menu-card-actions">
-                    <button class="add-to-cart-button" data-dish-id="${dish.id}">Add to Cart</button>
+        setTimeout(() => {
+            notification.classList.add('notification--hide');
+            setTimeout(() => {
+                notification.remove();
+            }, 300);
+        }, 3000);
+    }
+
+    renderShell() {
+        this.shadowRoot.innerHTML = `
+            <link rel="stylesheet" href="/blocks/menu/menu.css">
+            <div class="menu">
+                <div class="products">
+                    <h1 class="products__title">Nuestro Menú</h1>
+                    <ul class="products__filters" id="category-filters">
+                        <!-- Filtros de categoría se generarán dinámicamente -->
+                    </ul>
+                    
+                    <div id="content">
+                        <!-- Contenido dinámico (productos, loading, error) -->
+                    </div>
                 </div>
             </div>
         `;
-
-        // Evento para añadir al carrito
-        listItem.querySelector('.add-to-cart-button').addEventListener('click', (event) => {
-            event.stopPropagation();
-            this.handleAddToCart(dish);
-        });
-
-        // Evento para mostrar el plato en la imagen principal
-        listItem.addEventListener('click', () => {
-            this.menuImageSection.style.backgroundImage = `url('${dish.image_url}')`;
-            this.menuTitleElement.textContent = dish.name;
-            this.dishDescriptionElement.textContent = dish.description;
-            this.dishDescriptionElement.style.opacity = '1';
-        });
-        return listItem;
     }
-
-    filterDishesByCategory(categoryName) {
-        this.shadowRoot.querySelectorAll('.menu-filter-card').forEach(card => {
-            card.classList.toggle('active', card.dataset.categoryName === categoryName);
-        });
-        this.renderDishes(categoryName);
+    
+    render() {
+        const contentEl = this.shadowRoot.getElementById('content');
+        
+        if (this.isLoading) {
+            contentEl.innerHTML = '<div class="loading">Cargando productos...</div>';
+            return;
+        }
+        
+        if (this.error) {
+            contentEl.innerHTML = `
+                <div class="error">
+                    <p>${this.error}</p>
+                    <button id="retry-btn" class="products__filter">Reintentar</button>
+                </div>
+            `;
+            
+            const retryBtn = this.shadowRoot.getElementById('retry-btn');
+            if (retryBtn) {
+                retryBtn.addEventListener('click', () => this.loadProducts());
+            }
+            return;
+        }
+        
+        const filteredProducts = this.filterProducts();
+        
+        if (filteredProducts.length === 0) {
+            contentEl.innerHTML = `
+                <div class="loading">
+                    No hay productos disponibles${this.selectedCategory !== 'all' ? ' en esta categoría' : ''}.
+                </div>`;
+            return;
+        }
+        
+        contentEl.innerHTML = `
+            <div class="products__grid">
+                ${filteredProducts.map(product => `
+                    <article class="product-card">
+                        <img 
+                            src="${product.image || 'img/placeholder.jpg'}" 
+                            alt="${product.name}" 
+                            class="product-card__image"
+                            loading="lazy"
+                        >
+                        <div class="product-card__info">
+                            <div class="product-card__header">
+                                <h3 class="product-card__title">${product.name}</h3>
+                                <span class="product-card__price">$${(Number(product.price) || 0).toFixed(2)}</span>
+                            </div>
+                            ${product.description ? `
+                                <p class="product-card__description">
+                                    ${product.description}
+                                </p>
+                            ` : ''}
+                            <div class="product-card__footer">
+                                <button 
+                                    class="product-card__button" 
+                                    data-product-id="${product.id}"
+                                    aria-label="Añadir ${product.name} al carrito"
+                                >
+                                    Añadir al carrito
+                                </button>
+                            </div>
+                        </div>
+                    </article>
+                `).join('')}
+            </div>
+        `;
+        
+        this.renderCategoryFilters();
     }
-
-    handleAddToCart(dish) {
-        console.log(`Añadiendo ${dish.name} (ID: ${dish.id}) al carrito.`);
-        this.dispatchEvent(new CustomEvent('add-to-cart', {
-            detail: { dish: dish },
-            bubbles: true,
-            composed: true
-        }));
+    
+    renderCategoryFilters() {
+        const filtersContainer = this.shadowRoot.getElementById('category-filters');
+        
+        if (!filtersContainer) return;
+        
+        filtersContainer.innerHTML = this.categories.map(category => `
+            <li>
+                <button 
+                    class="products__filter ${this.selectedCategory === category ? 'products__filter--active' : ''}"
+                    data-category="${category}"
+                    aria-pressed="${this.selectedCategory === category}"
+                >
+                    ${category === 'all' ? 'Todos' : this.formatCategoryName(category)}
+                </button>
+            </li>
+        `).join('');
+    }
+    
+    formatCategoryName(category) {
+        return category
+            .split('-')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
+    }
+    
+    addEventListeners() {
+        this.shadowRoot.addEventListener('click', (e) => {
+            // Manejar clic en filtros de categoría
+            const categoryBtn = e.target.closest('.products__filter');
+            if (categoryBtn) {
+                e.preventDefault();
+                this.selectedCategory = categoryBtn.dataset.category;
+                this.render();
+                return; // Importante: salir después de manejar el clic
+            }
+            
+            // Manejar clic en botón de añadir al carrito
+            const addToCartBtn = e.target.closest('.product-card__button');
+            if (addToCartBtn) {
+                const productId = addToCartBtn.dataset.productId;
+                if (productId) {
+                    this.addToCart(parseInt(productId, 10), e);
+                }
+            }
+        });
+    }
+    
+    removeEventListeners() {
+    }
+    cleanup() {
     }
 }
 

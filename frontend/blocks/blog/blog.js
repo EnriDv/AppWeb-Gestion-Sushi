@@ -3,7 +3,7 @@ export class Blog extends HTMLElement {
         super();
         this.attachShadow({ mode: 'open' });
         this.shadowRoot.innerHTML = `
-            <link rel="stylesheet" href="styles.css">
+            <link rel="stylesheet" href="/blocks/blog/blog.css">
             <div class="blog-container">
                 <div class="left-section">
                     <img src="img/blog-main.png" alt="Personas fotografiando platos de comida">

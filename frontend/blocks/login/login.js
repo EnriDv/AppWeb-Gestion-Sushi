@@ -1,70 +1,102 @@
-// login.js
+import { authService } from '../../services/auth.service.js';
+
 export class Login extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
+    }
 
-        const template = document.createElement('template');
-        template.innerHTML = `
-            <link rel="stylesheet" href="styles.css"> <div class="login-container">
-                <div class="left-section">
-                    <img src="img/login-main.png" alt="Copas de vino en una mesa de restaurante">
-                    <div class="overlay-content">
-                        <h1>LOGIN</h1>
-                    </div>
-                </div>
-                <div class="right-section">
-                    <div class="login-form-header">
-                        <h2>LOGIN</h2>
-                    </div>
+    connectedCallback() {
+        this.render();
+        this.setupEventListeners();
+    }
 
-                    <form class="login-form">
-                        <div class="form-group">
-                            <input type="email" id="email" name="email" placeholder="Email" required>
+    render() {
+        this.shadowRoot.innerHTML = `
+            <style>
+                @import url('/blocks/login/login.css');
+            </style>
+            <div class="login">
+                <div class="login__container">
+                    <h2 class="login__title">Iniciar Sesión</h2>
+                    <form class="login__form">
+                        <div class="login__form-group">
+                            <label for="email" class="login__label">Correo Electrónico</label>
+                            <input 
+                                type="email" 
+                                id="email" 
+                                name="email" 
+                                class="login__input" 
+                                required
+                            >
                         </div>
-                        <div class="form-group">
-                            <input type="password" id="password" name="password" placeholder="Password" required>
+                        <div class="login__form-group">
+                            <label for="password" class="login__label">Contraseña</label>
+                            <input 
+                                type="password" 
+                                id="password" 
+                                name="password" 
+                                class="login__input" 
+                                required
+                            >
                         </div>
-                        <button type="submit" class="login-button">LOGIN</button>
-                        <a href="#/registration" class="registration-link">Go to registration instead</a>
+                        <button type="submit" class="login__button">Acceder</button>
+                        <p class="login__error-message"></p>
                     </form>
-
-                    <div class="footer-links">
-                        <a href="#">Licensing</a>
-                        <a href="#">Styleguide</a>
+                    <div class="login__footer">
+                        <p class="login__footer-text">
+                            ¿No tienes cuenta? 
+                            <a href="/register" class="login__footer-link">Regístrate aquí</a>
+                        </p>
                     </div>
                 </div>
             </div>
         `;
-
-        this.shadowRoot.appendChild(template.content.cloneNode(true));
     }
 
-    connectedCallback() {
-        console.log('Login component added to the DOM');
-        const form = this.shadowRoot.querySelector('.login-form');
-        form.addEventListener('submit', this.handleSubmit.bind(this));
-    }
-
-    disconnectedCallback() {
-        console.log('Login component removed from the DOM');
-        const form = this.shadowRoot.querySelector('.login-form');
+    setupEventListeners() {
+        const form = this.shadowRoot.querySelector('.login__form');
         if (form) {
-            form.removeEventListener('submit', this.handleSubmit.bind(this));
+            form.addEventListener('submit', this.handleSubmit.bind(this));
         }
+        
+        // Manejar clics en enlaces internos
+        const links = this.shadowRoot.querySelectorAll('a');
+        links.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const href = link.getAttribute('href');
+                if (href.startsWith('/')) {
+                    window.history.pushState({}, '', href);
+                    window.dispatchEvent(new PopStateEvent('popstate'));
+                }
+            });
+        });
     }
 
-    handleSubmit(event) {
+    async handleSubmit(event) {
         event.preventDefault();
+        const form = event.target;
+        const formData = new FormData(form);
+        const email = formData.get('email');
+        const password = formData.get('password');
+        const errorMessageElement = this.shadowRoot.querySelector('.login__error-message');
 
-        const email = this.shadowRoot.getElementById('email').value;
-        const password = this.shadowRoot.getElementById('password').value;
+        // Reset error message
+        errorMessageElement.textContent = '';
+        errorMessageElement.style.display = 'none';
 
-        console.log('Formulario de login enviado:', {
-            email, password
-        });
-
-        alert('Inicio de sesión simulado! (Valida tus credenciales con el backend)');
+        try {
+            await authService.login(email, password);
+            // La redirección se manejará a través del router
+            window.dispatchEvent(new CustomEvent('auth-change'));
+            window.location.hash = '/';
+        } catch (error) {
+            console.error('Login failed:', error);
+            const errorMessage = error.message || 'Error al iniciar sesión';
+            errorMessageElement.textContent = errorMessage;
+            errorMessageElement.style.display = 'block';
+        }
     }
 }
 

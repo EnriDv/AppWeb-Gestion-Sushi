@@ -3,7 +3,7 @@ export class BlogPost extends HTMLElement {
         super();
         this.attachShadow({ mode: 'open' });
         this.shadowRoot.innerHTML = `
-            <link rel="stylesheet" href="styles.css">
+            <link rel="stylesheet" href="/blocks/blog-post/blog-post.css">
             <div class="blog-post-container">
                 <div class="left-section">
                     <img id="main-post-image" src="" alt="Blog Post Image">

@@ -1,91 +1,161 @@
-// registration.js
+import { authService } from '../../services/auth.service.js';
+
 export class Registration extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
+    }
 
-        const template = document.createElement('template');
-        template.innerHTML = `
-            <link rel="stylesheet" href="styles.css"> <div class="registration-container">
-                <div class="left-section">
-                    <img src="img/registration-main.png" alt="Copas de vino en una mesa de restaurante">
-                    <div class="overlay-content">
-                        <h1>REGISTRATION</h1>
-                    </div>
-                </div>
-                <div class="right-section">
-                    <div class="registration-form-header">
-                        <h2>REGISTRATION</h2>
-                    </div>
+    connectedCallback() {
+        this.render();
+        this.setupEventListeners();
+    }
 
-                    <form class="registration-form">
-                        <div class="form-group">
-                            <input type="text" id="name" name="name" placeholder="Name" required>
+    render() {
+        this.shadowRoot.innerHTML = `
+            <style>
+                @import url('/blocks/registration/registration.css');
+            </style>
+            <div class="registration">
+                <div class="registration__container">
+                    <h2 class="registration__title">Crear Cuenta</h2>
+                    <form class="registration__form">
+                        <div class="registration__form-group">
+                            <label for="name" class="registration__label">Nombre Completo</label>
+                            <input 
+                                type="text" 
+                                id="name" 
+                                name="name" 
+                                class="registration__input" 
+                                required
+                            >
                         </div>
-                        <div class="form-group">
-                            <input type="tel" id="phone" name="phone" placeholder="Phone Number" required>
+                        <div class="registration__form-group">
+                            <label for="phone" class="registration__label">Teléfono</label>
+                            <input 
+                                type="tel" 
+                                id="phone" 
+                                name="phone" 
+                                class="registration__input" 
+                                required
+                            >
                         </div>
-                        <div class="form-group">
-                            <input type="email" id="email" name="email" placeholder="Email" required>
+                        <div class="registration__form-group">
+                            <label for="email" class="registration__label">Correo Electrónico</label>
+                            <input 
+                                type="email" 
+                                id="email" 
+                                name="email" 
+                                class="registration__input" 
+                                required
+                            >
                         </div>
-                        <div class="form-group">
-                            <input type="password" id="password" name="password" placeholder="Password" required>
+                        <div class="registration__form-group">
+                            <label for="password" class="registration__label">Contraseña</label>
+                            <input 
+                                type="password" 
+                                id="password" 
+                                name="password" 
+                                class="registration__input" 
+                                required
+                            >
                         </div>
-                        <div class="form-group">
-                            <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm Password" required>
+                        <div class="registration__form-group">
+                            <label for="confirm-password" class="registration__label">Confirmar Contraseña</label>
+                            <input 
+                                type="password" 
+                                id="confirm-password" 
+                                name="confirm-password" 
+                                class="registration__input" 
+                                required
+                            >
                         </div>
-                        <div class="form-group">
-                            <input type="text" id="address" name="address" placeholder="Address">
+                        <div class="registration__form-group">
+                            <label for="address" class="registration__label">Dirección</label>
+                            <input 
+                                type="text" 
+                                id="address" 
+                                name="address" 
+                                class="registration__input" 
+                                required
+                            >
                         </div>
-                        <button type="submit" class="register-button">REGISTER</button>
-                        <a href="#/login" class="login-link">Go to login instead</a>
+                        <button type="submit" class="registration__button">Registrarse</button>
+                        <p class="registration__error-message"></p>
                     </form>
-
-                    <div class="footer-links">
-                        <a href="#">Licensing</a>
-                        <a href="#">Styleguide</a>
+                    <div class="registration__footer">
+                        <p class="registration__footer-text">
+                            ¿Ya tienes una cuenta? 
+                            <a href="/login" class="registration__footer-link">Inicia sesión aquí</a>
+                        </p>
                     </div>
                 </div>
             </div>
         `;
-
-        this.shadowRoot.appendChild(template.content.cloneNode(true));
     }
 
-    connectedCallback() {
-        console.log('Registration component added to the DOM');
-        const form = this.shadowRoot.querySelector('.registration-form');
-        form.addEventListener('submit', this.handleSubmit.bind(this));
-    }
-
-    disconnectedCallback() {
-        console.log('Registration component removed from the DOM');
-        const form = this.shadowRoot.querySelector('.registration-form');
+    setupEventListeners() {
+        const form = this.shadowRoot.querySelector('.registration__form');
         if (form) {
-            form.removeEventListener('submit', this.handleSubmit.bind(this));
+            form.addEventListener('submit', this.handleSubmit.bind(this));
         }
+        
+        // Manejar clics en enlaces internos
+        const links = this.shadowRoot.querySelectorAll('a');
+        links.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const href = link.getAttribute('href');
+                if (href.startsWith('/')) {
+                    window.history.pushState({}, '', href);
+                    window.dispatchEvent(new PopStateEvent('popstate'));
+                }
+            });
+        });
     }
 
-    handleSubmit(event) {
+    async handleSubmit(event) {
         event.preventDefault();
+        const form = event.target;
+        const formData = new FormData(form);
+        const name = formData.get('name');
+        const phone = formData.get('phone');
+        const email = formData.get('email');
+        const password = formData.get('password');
+        const confirmPassword = formData.get('confirm-password');
+        const address = formData.get('address');
+        const errorMessageElement = this.shadowRoot.querySelector('.registration__error-message');
 
-        const name = this.shadowRoot.getElementById('name').value;
-        const phone = this.shadowRoot.getElementById('phone').value;
-        const email = this.shadowRoot.getElementById('email').value;
-        const password = this.shadowRoot.getElementById('password').value;
-        const confirmPassword = this.shadowRoot.getElementById('confirm-password').value;
-        const address = this.shadowRoot.getElementById('address').value;
+        // Reset error message
+        errorMessageElement.textContent = '';
+        errorMessageElement.style.display = 'none';
 
+        // Validar que las contraseñas coincidan
         if (password !== confirmPassword) {
-            alert('Passwords do not match!');
+            errorMessageElement.textContent = 'Las contraseñas no coinciden';
+            errorMessageElement.style.display = 'block';
             return;
         }
 
-        console.log('Formulario de registro enviado:', {
-            name, phone, email, password, address
-        });
-
-        alert('Registro enviado! (Esto es solo una simulación)');
+        try {
+            const data = await authService.register({
+                name,
+                email,
+                password,
+                phone,
+                address
+            });
+            
+            console.log('Registration successful:', data);
+            
+            // Redirigir a la página de login después de un registro exitoso
+            window.location.href = '/login';
+        } catch (error) {
+            console.error('Registration failed:', error);
+            const errorMessage = error.message || 'Error al registrar el usuario. Por favor, inténtalo de nuevo.';
+            errorMessageElement.textContent = errorMessage;
+            errorMessageElement.style.display = 'block';
+        }
     }
 }
 
