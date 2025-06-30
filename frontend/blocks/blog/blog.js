@@ -1,6 +1,12 @@
 export class Blog extends HTMLElement {
     constructor() {
         super();
+        this.articles = [];
+        this.page = 1;
+        this.productsPerPage = 8;
+        this.hasMore = true;
+        this.observer = null;
+        this.sentinel = null;
         this.attachShadow({ mode: 'open' });
         this.shadowRoot.innerHTML = `
             <link rel="stylesheet" href="/blocks/blog/blog.css">
@@ -35,15 +41,63 @@ export class Blog extends HTMLElement {
             
             const posts = await response.json();
             this.loadBlogPosts(posts);
+            
+            this.setup();
         } catch (error) {
             console.error('Error al cargar los datos del blog:', error);
             this.shadowRoot.querySelector('.articles-list').innerHTML = '<p>No se pudo cargar el blog.</p>';
         }
     }
 
-    loadBlogPosts(posts) {
+    setup() {
+        if (this.observer) {
+            this.observer.disconnect();
+        }
+
+        const articles = this.shadowRoot.querySelector('.articles-list');
+        if (!articles) return;
+
+        const existingSentinel = this.shadowRoot.querySelector('.article__sentinel');
+        if (existingSentinel) {
+            existingSentinel.remove();
+        }
+
+        this.sentinel = document.createElement('div');
+        this.sentinel.className = 'article__sentinel';
+        articles.appendChild(this.sentinel);
+
+        this.observer = new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting && !this.isLoading && this.hasMore) {
+                this.loadMoreArticles();
+            }
+        }, { rootMargin: '100px' });
+
+        this.observer.observe(this.sentinel);
+    }
+
+     loadMoreArticles() {
+        const start = (this.page - 1) * this.productsPerPage;
+        const end = start + this.productsPerPage;
+
+        if (this.articles.length === 0) {
+            this.hasMore = false;
+            if (this.sentinel) {
+                this.sentinel.style.display = 'none';
+            }
+            return;
+        }
+
+        this.renderArticles(this.articles, true);
+        this.page++;
+    }
+
+    loadBlogPosts(posts, append = false) {
         const articlesList = this.shadowRoot.querySelector('.articles-list');
-        articlesList.innerHTML = '';
+        if (!append) {
+            articlesList.innerHTML = '';
+            this.page = 1;
+            this.hasMore = true;
+        }
 
         posts.forEach(post => {
             const articleDiv = document.createElement('div');
@@ -61,7 +115,12 @@ export class Blog extends HTMLElement {
                     </div>
                 </a>
             `;
-            articlesList.appendChild(articleDiv);
+            if (append) {
+                articlesList.insertAdjacentHTML('beforeEnd', articleDiv);
+            } else {
+                articlesList.innerHTML = articleDiv;
+                this.setup();
+            }
         });
 
         const style = document.createElement('style');

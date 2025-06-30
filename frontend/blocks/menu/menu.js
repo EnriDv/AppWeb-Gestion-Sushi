@@ -42,7 +42,6 @@ export class menu extends HTMLElement {
             this.extractCategories();
             this.filterProducts();
             this.setup();
-            console.log(this.products)
         } catch (error) {
             console.error('Error al cargar los productos:', error);
             this.error = 'No se pudieron cargar los productos. Por favor, intente nuevamente.';
@@ -147,12 +146,11 @@ export class menu extends HTMLElement {
         `).join('');
 
         if (append) {
-            productsGrid.insertAdjacentHTML('beforeend', productsHTML);
+            productsGrid.insertAdjacentHTML('beforeEnd', productsHTML);
         } else {
             productsGrid.innerHTML = productsHTML;
             this.setup();
         }
-        console.error("holaaa")
     }
 
     renderLoading() {
