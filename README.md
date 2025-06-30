@@ -160,3 +160,7 @@ Puedes visualizar el diagrama con herramientas como dbdiagram.io usando el SQL d
 ---
 
 https://www.figma.com/design/X53GqUwCgv3BxxHMaGVl2t/web-app-exam-1?node-id=0-1&t=EhoytveOchmN4lbw-1
+
+DOCUMENTO:
+
+https://docs.google.com/document/d/1CVcpohg9skmLw5psxP7pjmfvcVhYpsnUtnNXIAMF0hI/edit?usp=sharing
