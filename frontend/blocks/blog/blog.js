@@ -102,7 +102,7 @@ export class Blog extends HTMLElement {
             this.hasMore = true;
         }
 
-        const articleDiv.innerHTML = this.articles.map( post=> `
+        const articleDiv = this.articles.map( post=> `
             <div class='blog-article'>
                 <a href="/blog-post?id=${post.id}" class="article-link">
                     <img src="${post.image_url || 'img/blog-post-main.png'}" alt="Imagen del post">
