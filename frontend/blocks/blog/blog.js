@@ -37,6 +37,7 @@ export class Blog extends HTMLElement {
     async fetchBlogData() {
         try {
             const response = await fetch('http://localhost:4090/api/blogs');
+            this.articles = response;
             if (!response.ok) throw new Error(`Error del servidor: ${response.status}`);
             
             const posts = await response.json();
@@ -93,7 +94,7 @@ export class Blog extends HTMLElement {
 
     loadBlogPosts(posts, append = false) {
         const articlesList = this.shadowRoot.querySelector('.articles-list');
-        
+        console.log(this.articles)
         if (!articlesList) return;
         
         if (!append) {
